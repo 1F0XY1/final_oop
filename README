@@ -1,138 +1,208 @@
-1. Login Endpoint (POST /auth/login)
-Request:
-Method: POST
-URL: http://localhost:8080/auth/login
-Headers:
-Content-Type: application/json
-Body (Raw, JSON format):
-json
+﻿Inventory Management System
+Project Overview
+This is an Inventory Management System built with Spring Boot and MySQL. The application allows businesses to manage products, track stock levels, and handle CRUD operations for product information. Additionally, it provides an API with Swagger documentation to facilitate integration with other services.
+The system includes features such as:
+• Product creation, update, and deletion.
+• CRUD operations for inventory management.
+• Low-stock notifications.
+• Search and filtering functionality for products.
+• User registration and authentication using JWT (JSON Web Token).
+Prerequisites
+Before running the project, ensure that the following software and tools are installed:
+• Java 23 or newer (for compiling and running the Spring Boot application).
+• MySQL (for database management).
+• Maven (for building and managing the project dependencies).
+• Postman (optional, for testing the API endpoints).
+• Swagger UI for API documentation: http://localhost:8080/swagger-ui.html.
+Setup Instructions
+1. Clone the Repository
+Clone this repository to your local machine using:
+bash
 Copy code
-{
-    "username": "user",
-    "password": "password"
-}
+git clone https://github.com/yourusername/inventory-management.git
+cd inventory-management
+2. Setup MySQL Database
+1. Install MySQL and create a database for the project.
+Example commands:
+bash
+Copy code
+mysql -u root -p
+CREATE DATABASE inventory_db;
+2. Update the application.properties file in src/main/resources with your database credentials.
+properties
+Copy code
+spring.datasource.url=jdbc:mysql://localhost:3306/inventory_db
+spring.datasource.username=root
+spring.datasource.password=yourpassword
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+3. Build the Project
+Use Maven to build the project:
+bash
+Copy code
+mvn clean install
+4. Run the Project Locally
+To run the application locally:
+bash
+Copy code
+mvn spring-boot:run
+The application will start at http://localhost:8080.
+5. Access Swagger UI
+You can view the API documentation via Swagger UI at:
+bash
+Copy code
+http://localhost:8080/swagger-ui.html
+6. API Authentication
+• For accessing some endpoints, you will need to authenticate with JWT (JSON Web Token).
+• Use the POST request to /auth/login with the credentials:
 Example:
-Request:
-
-POST http://localhost:8080/auth/login
-Body:
+o Username: admin
+o Password: admin123
+The response will include a JWT token, which should be included in the Authorization header for subsequent API requests (e.g., Authorization: Bearer <JWT>).
+API Endpoint Descriptions
+1. POST /users/register
+Register a new user.
+Request Body:
 json
 Copy code
 {
-    "username": "user",
-    "password": "password"
+  "username": "newuser",
+  "password": "password",
+  "email": "newuser@example.com"
 }
-Response:
-
-json
-Copy code
-{
-    "token": "your_generated_jwt_token"
-}
-You will receive a JWT token in the response body like:
-
-json
-Copy code
-{
-    "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNjk2Mzc2MzMwLCJleHBpcmVkYXRpb24iOjE2OTYzNzYzMzB9.qzLQGgHZUfl96E6xP9V2uVYzJ6Uxx_6FwlhZXDNO1-gm0LMrF-x9vVR3pYgDwL13vT6zZG48RpoEkRszXyYIQm3sRGG_xFgTHPvz2UtbQeGhTHTdIHm0FgxL9xwddtYj"
-}
-2. Accessing Protected Endpoint (GET /example/protected)
-Once you have the JWT token from the login response, you can use it to access any protected endpoint. Here's an example of how to do that.
-
-Request:
-Method: GET
-URL: http://localhost:8080/example/protected
-Headers:
-Authorization: Bearer <your_generated_jwt_token>
-Example:
-Request:
-GET http://localhost:8080/example/protected
-Headers:
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNjk2Mzc2MzMwLCJleHBpcmVkYXRpb24iOjE2OTYzNzYzMzB9.qzLQGgHZUfl96E6xP9V2uVYzJ6Uxx_6FwlhZXDNO1-gm0LMrF-x9vVR3pYgDwL13vT6zZG48RpoEkRszXyYIQm3sRGG_xFgTHPvz2UtbQeGhTHTdIHm0FgxL9xwddtYj
-Response (Successful, 200 OK):
-json
-Copy code
-{
-    "message": "This is a protected resource"
-}
-Response (Unauthorized, 401) if the JWT token is missing or invalid:
-json
-Copy code
-{
-    "error": "Unauthorized"
-}
-3. Accessing Another Protected Endpoint with JWT (GET /another/protected)
-Request:
-Method: GET
-URL: http://localhost:8080/another/protected
-Headers:
-Authorization: Bearer <your_generated_jwt_token>
-Example:
-Request:
-GET http://localhost:8080/another/protected
-Headers:
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNjk2Mzc2MzMwLCJleHBpcmVkYXRpb24iOjE2OTYzNzYzMzB9.qzLQGgHZUfl96E6xP9V2uVYzJ6Uxx_6FwlhZXDNO1-gm0LMrF-x9vVR3pYgDwL13vT6zZG48RpoEkRszXyYIQm3sRGG_xFgTHPvz2UtbQeGhTHTdIHm0FgxL9xwddtYj
 Response:
 json
 Copy code
 {
-    "message": "You have access to this resource"
+  "id": 1,
+  "username": "newuser",
+  "email": "newuser@example.com"
 }
-If you send a request without a token or with an invalid token, you will receive a 401 Unauthorized response.
 
-4. Refresh Token (Optional)
-If your system implements refresh tokens, here’s how you might test it.
-
-Request:
-Method: POST
-URL: http://localhost:8080/auth/refresh
-Headers:
-Content-Type: application/json
-Body (Raw, JSON format):
+2. POST /auth/login
+Login with username and password to get a JWT token.
+Request Body:
 json
 Copy code
 {
-    "refreshToken": "<your_refresh_token>"
-}
-Example:
-Request:
-
-POST http://localhost:8080/auth/refresh
-Body:
-json
-Copy code
-{
-    "refreshToken": "your_refresh_token"
+  "username": "admin",
+  "password": "admin123"
 }
 Response:
-
 json
 Copy code
 {
-    "token": "new_jwt_token"
+  "token": "your-jwt-token"
 }
-5. Error Handling for Invalid Token (GET /protected)
-If you attempt to access a protected resource with an invalid or expired JWT, you will receive an error message.
 
-Example of Invalid Token:
-Request:
-GET http://localhost:8080/example/protected
-Headers:
-Authorization: Bearer invalid_token
-Response (Unauthorized):
+3. GET /products
+Get all products in the inventory.
+Response:
+json
+Copy code
+[
+  {
+    "id": 1,
+    "name": "Product 1",
+    "description": "A sample product",
+    "price": 100.0,
+    "stock": 50
+  },
+  {
+    "id": 2,
+    "name": "Product 2",
+    "description": "Another sample product",
+    "price": 200.0,
+    "stock": 30
+  }
+]
+
+4. POST /products
+Create a new product.
+Request Body:
 json
 Copy code
 {
-    "error": "Unauthorized"
+  "name": "New Product",
+  "description": "A description of the new product",
+  "price": 150.0,
+  "stock": 100
 }
-Postman Environment Variables
-You can also use Postman Environment Variables to make your testing easier. For example:
+Response:
+json
+Copy code
+{
+  "id": 3,
+  "name": "New Product",
+  "description": "A description of the new product",
+  "price": 150.0,
+  "stock": 100
+}
 
-Add a variable JWT_TOKEN to store your token and use it in subsequent requests.
-In Postman, after receiving the JWT from the login endpoint, you can set it as an environment variable.
-Go to Environment Quick Look > Add New > Create a new environment variable.
-Set the JWT_TOKEN as the value.
-After setting the token, you can use this variable in your requests:
+5. GET /products/{id}
+Get a product by ID.
+Response:
+json
+Copy code
+{
+  "id": 1,
+  "name": "Product 1",
+  "description": "A sample product",
+  "price": 100.0,
+  "stock": 50
+}
 
-Authorization: Bearer {{JWT_TOKEN}}
+6. PUT /products/{id}
+Update an existing product.
+Request Body:
+json
+Copy code
+{
+  "name": "Updated Product",
+  "description": "Updated description",
+  "price": 120.0,
+  "stock": 60
+}
+Response:
+json
+Copy code
+{
+  "id": 1,
+  "name": "Updated Product",
+  "description": "Updated description",
+  "price": 120.0,
+  "stock": 60
+}
+
+7. DELETE /products/{id}
+Delete a product by ID.
+Response:
+json
+Copy code
+{
+  "message": "Product deleted successfully"
+}
+
+8. GET /products/low-stock
+Get products with stock levels below a threshold (e.g., 10).
+Response:
+json
+Copy code
+[
+  {
+    "id": 2,
+    "name": "Product 2",
+    "description": "Another sample product",
+    "price": 200.0,
+    "stock": 5
+  }
+]
+
+Additional Features
+• JWT Authentication for secure API access.
+• Swagger UI for interactive API documentation.
+• CRUD operations for managing products and users.
+• Database: MySQL for data persistence.
+License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
