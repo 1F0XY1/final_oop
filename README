@@ -1,0 +1,138 @@
+1. Login Endpoint (POST /auth/login)
+Request:
+Method: POST
+URL: http://localhost:8080/auth/login
+Headers:
+Content-Type: application/json
+Body (Raw, JSON format):
+json
+Copy code
+{
+    "username": "user",
+    "password": "password"
+}
+Example:
+Request:
+
+POST http://localhost:8080/auth/login
+Body:
+json
+Copy code
+{
+    "username": "user",
+    "password": "password"
+}
+Response:
+
+json
+Copy code
+{
+    "token": "your_generated_jwt_token"
+}
+You will receive a JWT token in the response body like:
+
+json
+Copy code
+{
+    "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNjk2Mzc2MzMwLCJleHBpcmVkYXRpb24iOjE2OTYzNzYzMzB9.qzLQGgHZUfl96E6xP9V2uVYzJ6Uxx_6FwlhZXDNO1-gm0LMrF-x9vVR3pYgDwL13vT6zZG48RpoEkRszXyYIQm3sRGG_xFgTHPvz2UtbQeGhTHTdIHm0FgxL9xwddtYj"
+}
+2. Accessing Protected Endpoint (GET /example/protected)
+Once you have the JWT token from the login response, you can use it to access any protected endpoint. Here's an example of how to do that.
+
+Request:
+Method: GET
+URL: http://localhost:8080/example/protected
+Headers:
+Authorization: Bearer <your_generated_jwt_token>
+Example:
+Request:
+GET http://localhost:8080/example/protected
+Headers:
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNjk2Mzc2MzMwLCJleHBpcmVkYXRpb24iOjE2OTYzNzYzMzB9.qzLQGgHZUfl96E6xP9V2uVYzJ6Uxx_6FwlhZXDNO1-gm0LMrF-x9vVR3pYgDwL13vT6zZG48RpoEkRszXyYIQm3sRGG_xFgTHPvz2UtbQeGhTHTdIHm0FgxL9xwddtYj
+Response (Successful, 200 OK):
+json
+Copy code
+{
+    "message": "This is a protected resource"
+}
+Response (Unauthorized, 401) if the JWT token is missing or invalid:
+json
+Copy code
+{
+    "error": "Unauthorized"
+}
+3. Accessing Another Protected Endpoint with JWT (GET /another/protected)
+Request:
+Method: GET
+URL: http://localhost:8080/another/protected
+Headers:
+Authorization: Bearer <your_generated_jwt_token>
+Example:
+Request:
+GET http://localhost:8080/another/protected
+Headers:
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNjk2Mzc2MzMwLCJleHBpcmVkYXRpb24iOjE2OTYzNzYzMzB9.qzLQGgHZUfl96E6xP9V2uVYzJ6Uxx_6FwlhZXDNO1-gm0LMrF-x9vVR3pYgDwL13vT6zZG48RpoEkRszXyYIQm3sRGG_xFgTHPvz2UtbQeGhTHTdIHm0FgxL9xwddtYj
+Response:
+json
+Copy code
+{
+    "message": "You have access to this resource"
+}
+If you send a request without a token or with an invalid token, you will receive a 401 Unauthorized response.
+
+4. Refresh Token (Optional)
+If your system implements refresh tokens, here’s how you might test it.
+
+Request:
+Method: POST
+URL: http://localhost:8080/auth/refresh
+Headers:
+Content-Type: application/json
+Body (Raw, JSON format):
+json
+Copy code
+{
+    "refreshToken": "<your_refresh_token>"
+}
+Example:
+Request:
+
+POST http://localhost:8080/auth/refresh
+Body:
+json
+Copy code
+{
+    "refreshToken": "your_refresh_token"
+}
+Response:
+
+json
+Copy code
+{
+    "token": "new_jwt_token"
+}
+5. Error Handling for Invalid Token (GET /protected)
+If you attempt to access a protected resource with an invalid or expired JWT, you will receive an error message.
+
+Example of Invalid Token:
+Request:
+GET http://localhost:8080/example/protected
+Headers:
+Authorization: Bearer invalid_token
+Response (Unauthorized):
+json
+Copy code
+{
+    "error": "Unauthorized"
+}
+Postman Environment Variables
+You can also use Postman Environment Variables to make your testing easier. For example:
+
+Add a variable JWT_TOKEN to store your token and use it in subsequent requests.
+In Postman, after receiving the JWT from the login endpoint, you can set it as an environment variable.
+Go to Environment Quick Look > Add New > Create a new environment variable.
+Set the JWT_TOKEN as the value.
+After setting the token, you can use this variable in your requests:
+
+Authorization: Bearer {{JWT_TOKEN}}
+
